@@ -1,19 +1,22 @@
 <template>
   <section class="produtos-container">
-    <div v-if="produtos && produtos.length" class="produtos">
-      <div class="produto" v-for="produto in produtos" :key="produto.id">
-        <router-link to="/">
-          <img v-if="produto.fotos" :src="produto.fotos[0].src" :alt="produto.fotos[0]">
-          <p class="preco">{{produto.preco}}</p>
-          <h2 class="titulo">{{produto.nome}}</h2>
-          <p>{{produto.descricao}}</p>
-        </router-link>
+    <transition mode="out-in">
+      <div v-if="produtos && produtos.length" class="produtos" key="produtos">
+        <div class="produto" v-for="produto in produtos" :key="produto.id">
+          <router-link to="/">
+            <img v-if="produto.fotos" :src="produto.fotos[0].src" :alt="produto.fotos[0]">
+            <p class="preco">{{produto.preco}}</p>
+            <h2 class="titulo">{{produto.nome}}</h2>
+            <p>{{produto.descricao}}</p>
+          </router-link>
+        </div>
+        <ProdutosPaginar :produtosTotal="produtosTotal" :produtosPorPagina="produtosPorPagina"></ProdutosPaginar>
       </div>
-      <ProdutosPaginar :produtosTotal="produtosTotal" :produtosPorPagina="produtosPorPagina"></ProdutosPaginar>
-    </div>
-    <div v-else-if="produtos && produtos.length === 0">
-      <p>Busca sem resultados. Tente buscar outro termo.</p>
-    </div>
+      <div v-else-if="produtos && produtos.length === 0" key="sem-resultado">
+        <p>Busca sem resultados. Tente buscar outro termo.</p>
+      </div>
+      <PaginaCarregando v-else key="carregando"/>
+    </transition>
   </section>
 </template>
 
@@ -42,10 +45,13 @@ export default {
   },
   methods: {
     getProdutos() {
-      api.get(this.url).then(response => {
-        this.produtosTotal = Number(response.headers['x-total-count'])
-        this.produtos = response.data
-      })
+      this.produtos = null 
+      setTimeout(() => {
+        api.get(this.url).then(response => {
+          this.produtosTotal = Number(response.headers['x-total-count'])
+          this.produtos = response.data
+        })
+      }, 1000)
     }
   },
   watch: {
