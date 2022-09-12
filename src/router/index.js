@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProdutoView from "../views/ProdutoView.vue"
+import LoginView from "../views/LoginView.vue"
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,11 @@ export default new VueRouter({
       name: "produto",
       component: ProdutoView,
       props: true
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: LoginView
     },
   ],
   scrollBehavior() {
